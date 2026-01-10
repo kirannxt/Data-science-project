@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h2>Flask App</h2>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('job_post_detector') }}">Job Detector</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>User Profile</h1>
+            <p>Manage your profile information</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="card">
+                <h3>Account Information</h3>
+                <p><strong>Username:</strong> {{ username }}</p>
+                <p><strong>Account Status:</strong> Active</p>
+                <p><strong>Member Since:</strong> January 2024</p>
+                <button class="btn" style="margin-top: 15px;">Edit Profile</button>
+            </div>
+            
+            <div class="card">
+                <h3>Security Settings</h3>
+                <p><strong>Password:</strong> ••••••••••</p>
+                <p><strong>Two-Factor Auth:</strong> Disabled</p>
+                <p><strong>Last Login:</strong> Today at 10:30 AM</p>
+                <button class="btn" style="margin-top: 15px;">Change Password</button>
+            </div>
+            
+            <div class="card">
+                <h3>Contact Information</h3>
+                <p><strong>Email:</strong> {{ username }}@example.com</p>
+                <p><strong>Phone:</strong> Not set</p>
+                <p><strong>Country:</strong> United States</p>
+                <button class="btn" style="margin-top: 15px;">Update Contact</button>
+            </div>
+        </div>
+
+        <div class="content-grid" style="margin-top: 30px;">
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <ul style="color: #666;">
+                    <li>✓ Logged in - Today 10:30 AM</li>
+                    <li>✓ Updated profile - Yesterday 3:45 PM</li>
+                    <li>✓ Changed password - 3 days ago</li>
+                    <li>✓ Enabled notifications - 1 week ago</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>Preferences</h3>
+                <p><strong>Email Notifications:</strong> Enabled</p>
+                <p><strong>Dark Mode:</strong> Disabled</p>
+                <p><strong>Language:</strong> English</p>
+                <p><strong>Timezone:</strong> UTC-5</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

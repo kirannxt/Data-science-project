@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Intelligent Threat Hunting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h2>⚠️ Threat Hunting Dashboard</h2>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('threat_detector') }}">Threat Detector</a></li>
+                <li><a href="{{ url_for('model_info') }}">Model Info</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>🛡️ Threat Detection Dashboard</h1>
+            <p>Welcome to Intelligent Threat Hunting: ML-Driven Anomaly Detection in Network Traffic</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">25</div>
+                <div class="stat-label">Network Samples Analyzed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Normal Traffic Patterns</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">10</div>
+                <div class="stat-label">Anomalous Detections</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">K=3</div>
+                <div class="stat-label">KNN Model Parameter</div>
+            </div>
+        </div>
+
+        <div class="content-grid" style="margin-top: 40px;">
+            <div class="card">
+                <h3>🔍 Threat Detection</h3>
+                <p>Analyze network traffic patterns to detect potential anomalies and threats using advanced machine learning algorithms.</p>
+                <button class="btn" style="margin-top: 15px;" onclick="window.location.href='{{ url_for('threat_detector') }}'">
+                    Analyze Network Traffic
+                </button>
+            </div>
+
+            <div class="card">
+                <h3>📊 Model Information</h3>
+                <p>Learn about the K-Neighbors classifier and how it identifies anomalous network traffic patterns in real-time.</p>
+                <button class="btn" style="margin-top: 15px;" onclick="window.location.href='{{ url_for('model_info') }}'">
+                    View Model Details
+                </button>
+            </div>
+
+            <div class="card">
+                <h3>⚙️ System Status</h3>
+                <p>Real-time monitoring system active. ML model trained on 25 network traffic samples with 94% accuracy.</p>
+                <div style="margin-top: 10px; padding: 10px; background: rgba(22, 163, 74, 0.2); border-radius: 5px; color: #86efac;">
+                    ✓ System Operational
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

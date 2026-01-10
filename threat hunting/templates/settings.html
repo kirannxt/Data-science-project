@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Intelligent Threat Hunting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h2>⚠️ Threat Hunting Dashboard</h2>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('threat_detector') }}">Threat Detector</a></li>
+                <li><a href="{{ url_for('model_info') }}">Model Info</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>⚙️ Account Settings</h1>
+            <p>Configure your threat hunting preferences</p>
+        </div>
+
+        <div class="form-section">
+            <h2>🔔 Notification Preferences</h2>
+            <div style="margin-top: 20px;">
+                <div style="padding: 15px; background: rgba(30, 30, 46, 0.5); border-radius: 8px; margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" checked style="margin-right: 10px; width: 20px; height: 20px; cursor: pointer;">
+                        <span>Enable anomaly detection alerts</span>
+                    </label>
+                </div>
+                <div style="padding: 15px; background: rgba(30, 30, 46, 0.5); border-radius: 8px; margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" checked style="margin-right: 10px; width: 20px; height: 20px; cursor: pointer;">
+                        <span>Notify on high-risk traffic detection</span>
+                    </label>
+                </div>
+                <div style="padding: 15px; background: rgba(30, 30, 46, 0.5); border-radius: 8px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" style="margin-right: 10px; width: 20px; height: 20px; cursor: pointer;">
+                        <span>Send daily threat summary reports</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" style="margin-top: 30px;">
+            <h2>🎨 Display Preferences</h2>
+            <div style="margin-top: 20px;">
+                <div class="form-group">
+                    <label for="theme">Theme</label>
+                    <select id="theme" style="width: 100%; padding: 10px; border: 2px solid #7f1d1d; border-radius: 5px; background: #1f2937; color: #e0e0e0; cursor: pointer;">
+                        <option value="dark" selected>Dark (Current)</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label for="confidence_threshold">Anomaly Detection Confidence Threshold</label>
+                    <input type="range" id="confidence_threshold" min="0" max="100" value="60" style="width: 100%; cursor: pointer;">
+                    <p style="color: #a0a0a0; margin-top: 5px; font-size: 12px;">Current: 60%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" style="margin-top: 30px;">
+            <h2>🔐 Security Settings</h2>
+            <div style="margin-top: 20px;">
+                <p style="color: #a0a0a0; margin-bottom: 15px;">
+                    Password management and security options:
+                </p>
+                <button class="btn" style="margin-bottom: 10px; width: 100%;">Change Password</button>
+                <button class="btn" style="margin-bottom: 10px; width: 100%;">View Login History</button>
+                <button class="btn" style="width: 100%;">Active Sessions</button>
+            </div>
+        </div>
+
+        <div class="form-section" style="margin-top: 30px;">
+            <h2>📊 Analysis Settings</h2>
+            <div style="margin-top: 20px;">
+                <div style="padding: 15px; background: rgba(30, 30, 46, 0.5); border-radius: 8px; margin-bottom: 15px;">
+                    <p style="color: #a0a0a0;">
+                        <strong style="color: #f87171;">ML Model Version:</strong><br>
+                        K-Neighbors Classifier (k=3)
+                    </p>
+                </div>
+                <div style="padding: 15px; background: rgba(30, 30, 46, 0.5); border-radius: 8px; margin-bottom: 15px;">
+                    <p style="color: #a0a0a0;">
+                        <strong style="color: #f87171;">Training Samples:</strong><br>
+                        25 network traffic patterns (15 normal, 10 anomalous)
+                    </p>
+                </div>
+                <div style="padding: 15px; background: rgba(30, 30, 46, 0.5); border-radius: 8px;">
+                    <p style="color: #a0a0a0;">
+                        <strong style="color: #f87171;">Model Accuracy:</strong><br>
+                        94% on training dataset
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section" style="margin-top: 30px; background: rgba(127, 29, 29, 0.2); border-left-color: #dc2626;">
+            <h2 style="color: #fca5a5;">⚠️ Danger Zone</h2>
+            <p style="color: #a0a0a0;">
+                Irreversible actions for account management:
+            </p>
+            <button class="btn" style="margin-top: 15px; width: 100%; background: rgba(220, 38, 38, 0.5); border: 2px solid #dc2626;">
+                Delete Account
+            </button>
+        </div>
+    </div>
+</body>
+</html>

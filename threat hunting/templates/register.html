@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Intelligent Threat Hunting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <h1>⚠️ Create Account</h1>
+        <p style="text-align: center; color: #a0a0a0; margin-bottom: 30px;">Intelligent Threat Hunting System</p>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Choose a username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Create a password">
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm password">
+            </div>
+
+            <button type="submit" class="btn">Register Account</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; color: #a0a0a0;">
+            Already have an account? <a href="{{ url_for('login') }}" style="color: #f87171; text-decoration: none;">Login here</a>
+        </p>
+    </div>
+</body>
+</html>

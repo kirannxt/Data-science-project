@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Intelligent Threat Hunting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <h1>⚠️ Threat Hunting</h1>
+        <p style="text-align: center; color: #a0a0a0; margin-bottom: 30px;">ML-Driven Anomaly Detection in Network Traffic</p>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter password">
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; color: #a0a0a0;">
+            Don't have an account? <a href="{{ url_for('register') }}" style="color: #f87171; text-decoration: none;">Register here</a>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #7f1d1d; margin: 25px 0;">
+
+        <p style="color: #a0a0a0; font-size: 12px;">
+            <strong>Demo Credentials:</strong><br>
+            Username: <code style="color: #fca5a5;">demo_admin</code><br>
+            Password: <code style="color: #fca5a5;">threat123</code>
+        </p>
+    </div>
+</body>
+</html>
