@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Home - Sleep Stress Detection{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Sleep-Based Stress Detection</h1>
+        <p class="subtitle">Using Machine Learning to Analyze Sleep Patterns and Detect Stress Levels</p>
+        <div class="cta-buttons">
+            <a href="/prediction" class="btn btn-primary">Start Detection</a>
+            <a href="/dashboard" class="btn btn-secondary">View Dashboard</a>
+        </div>
+    </div>
+    <div class="hero-illustration">
+        <div class="phone-animation">[Icon]</div>
+    </div>
+</div>
+
+<section class="features-section">
+    <h2>Key Features</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">[Icon]</div>
+            <h3>Sleep Analysis</h3>
+            <p>Advanced analysis of sleep patterns and quality metrics</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">[Icon]</div>
+            <h3>Stress Prediction</h3>
+            <p>Accurate ML-based stress level prediction</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">[Icon]</div>
+            <h3>Smart Insights</h3>
+            <p>Personalized recommendations for better sleep</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">[Icon]</div>
+            <h3>Privacy Secured</h3>
+            <p>Your data is completely private and secure</p>
+        </div>
+    </div>
+</section>
+
+<section class="info-section">
+    <h2>How It Works</h2>
+    <div class="steps">
+        <div class="step">
+            <span class="step-number">1</span>
+            <h4>Input Sleep Data</h4>
+            <p>Provide information about your sleep patterns</p>
+        </div>
+        <div class="step">
+            <span class="step-number">2</span>
+            <h4>ML Analysis</h4>
+            <p>Our model analyzes your sleep and health data</p>
+        </div>
+        <div class="step">
+            <span class="step-number">3</span>
+            <h4>Get Results</h4>
+            <p>Receive detailed stress detection results</p>
+        </div>
+        <div class="step">
+            <span class="step-number">4</span>
+            <h4>Get Recommendations</h4>
+            <p>Get personalized suggestions to improve sleep</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <h2>Ready to Analyze Your Sleep?</h2>
+    <p>Join thousands of users improving their sleep quality and reducing stress</p>
+    <a href="/register" class="btn btn-large">Get Started Today</a>
+</section>
+{% endblock %}

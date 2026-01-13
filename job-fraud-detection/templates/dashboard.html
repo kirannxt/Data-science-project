@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Job Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="container dashboard-container">
+    <h1>Fraud Detection Dashboard</h1>
+    <p class="subtitle">Monitor job listing analysis history</p>
+
+    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--orange-very-light); border-radius: 8px;">
+        <h2>About FraudGuard</h2>
+        <p>
+            FraudGuard is dedicated to protecting job seekers from fraudulent job listings through advanced machine learning analysis. 
+            Our mission is to create a safer job market by identifying scams before they can harm unsuspecting applicants.
+        </p>
+    </section>
+
+    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--orange-very-light); border-radius: 8px;">
+        <h2>How Our Detection Works</h2>
+        <div class="model-info">
+            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
+                <h3>Feature Analysis</h3>
+                <p>We analyze 8 key indicators including salary ranges, company verification, location specificity, description quality, contact verification, posting age, grammar quality, and keyword patterns.</p>
+            </div>
+            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
+                <h3>Machine Learning</h3>
+                <p>Our Gradient Boosting model identifies complex patterns that distinguish legitimate job postings from fraudulent ones with high accuracy.</p>
+            </div>
+            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
+                <h3>Instant Detection</h3>
+                <p>Based on feature analysis, the model classifies listings as Legitimate or Fraudulent with confidence scores for verification.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--orange-very-light); border-radius: 8px;">
+        <h2>Why Choose FraudGuard?</h2>
+        <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>High Accuracy</h4>
+                <p style="font-size: 14px;">Advanced ML with high fraud detection accuracy</p>
+            </div>
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>Fast Analysis</h4>
+                <p style="font-size: 14px;">Instant results on job listing authenticity</p>
+            </div>
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>Easy to Use</h4>
+                <p style="font-size: 14px;">Simple interface for all users</p>
+            </div>
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>Data Privacy</h4>
+                <p style="font-size: 14px;">Your data is completely secure</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="recent-detections">
+        <h3>Recent Detection History</h3>
+        <table class="detections-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Salary Range</th>
+                    <th>Company Verified</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2026-01-11</td>
+                    <td>$45,000</td>
+                    <td>Yes</td>
+                    <td><span class="badge badge-legitimate">Legitimate</span></td>
+                </tr>
+                <tr>
+                    <td>2026-01-10</td>
+                    <td>$200,000</td>
+                    <td>No</td>
+                    <td><span class="badge badge-fraudulent">Fraudulent</span></td>
+                </tr>
+                <tr>
+                    <td>2026-01-09</td>
+                    <td>$65,000</td>
+                    <td>Yes</td>
+                    <td><span class="badge badge-legitimate">Legitimate</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

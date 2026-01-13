@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Prediction - Sleep Stress Detection{% endblock %}
+
+{% block content %}
+<div class="container prediction-container">
+    <h1>Sleep Stress Detection</h1>
+    <p class="subtitle">Analyze your sleep patterns and detect stress levels</p>
+
+    <div class="prediction-form-wrapper">
+        <div class="form-section">
+            <h2>Enter Your Sleep Data</h2>
+            <form method="POST" class="sleep-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sleep_duration">Sleep Duration (hours)</label>
+                        <input type="number" id="sleep_duration" name="sleep_duration" min="0" max="12" step="0.5" value="7" required>
+                        <small>How many hours did you sleep?</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="sleep_quality">Sleep Quality (1-10)</label>
+                        <input type="number" id="sleep_quality" name="sleep_quality" min="1" max="10" value="7" required>
+                        <small>Rate the quality of your sleep</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sleep_cycles">Sleep Cycles (3-6)</label>
+                        <input type="number" id="sleep_cycles" name="sleep_cycles" min="3" max="6" value="4" required>
+                        <small>Number of complete sleep cycles</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="restlessness">Restlessness Level (0-10)</label>
+                        <input type="number" id="restlessness" name="restlessness" min="0" max="10" step="0.5" value="5" required>
+                        <small>How restless was your sleep?</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="heart_rate">Average Heart Rate (BPM)</label>
+                        <input type="number" id="heart_rate" name="heart_rate" min="40" max="150" value="65" required>
+                        <small>Your average heart rate during sleep</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="wake_ups">Wake Ups During Night</label>
+                        <input type="number" id="wake_ups" name="wake_ups" min="0" max="10" value="1" required>
+                        <small>How many times did you wake up?</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="caffeine_intake">Caffeine Intake (mg)</label>
+                        <input type="number" id="caffeine_intake" name="caffeine_intake" min="0" max="1000" value="100" required>
+                        <small>Total caffeine consumed that day</small>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">Analyze Sleep Pattern</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="result-section">
+            <h2>Analysis Results</h2>
+            {% if result.error %}
+            <div class="error-message">
+                <strong>Error:</strong> {{ result.error }}
+            </div>
+            {% else %}
+            <div class="result-card" style="border-left: 5px solid {{ result.color }};">
+                <div class="result-header">
+                    <h3>{{ result.stress_level }}</h3>
+                    <span class="stress-score">{{ result.stress_score }}%</span>
+                </div>
+                <div class="result-confidence">
+                    <p><strong>Confidence:</strong> {{ result.confidence }}%</p>
+                </div>
+                <div class="result-insights">
+                    <h4>Recommendations:</h4>
+                    {% if result.stress_level == 'Low Stress' %}
+                    <ul>
+                        <li>Your sleep patterns indicate low stress levels</li>
+                        <li>Continue maintaining your current sleep schedule</li>
+                        <li>Keep up with your healthy sleep habits</li>
+                    </ul>
+                    {% elif result.stress_level == 'Medium Stress' %}
+                    <ul>
+                        <li>Your sleep shows moderate stress indicators</li>
+                        <li>Consider improving sleep hygiene practices</li>
+                        <li>Try relaxation techniques before bedtime</li>
+                        <li>Reduce caffeine intake in the evening</li>
+                    </ul>
+                    {% else %}
+                    <ul>
+                        <li>Your sleep patterns indicate high stress levels</li>
+                        <li>Consult with a healthcare professional</li>
+                        <li>Practice stress management techniques</li>
+                        <li>Maintain consistent sleep schedule</li>
+                        <li>Limit screen time before bed</li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
