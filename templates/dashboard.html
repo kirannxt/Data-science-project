@@ -1,64 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body class="dashboard-page">
-    <nav class="navbar">
-        <div class="navbar-content">
-            <h2>Flask App</h2>
-            <ul class="navbar-menu">
-                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                <li><a href="{{ url_for('job_post_detector') }}">Job Detector</a></li>
-                <li><a href="{{ url_for('settings') }}">Settings</a></li>
-                <li><a href="{{ url_for('logout') }}" class="logout">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
+{% extends "base.html" %}
+{% block title %}Dashboard - MindPhone AI: Intelligent Prediction of Smartphone Addiction{% endblock %}
 
-    <div class="page-container">
-        <div class="page-header">
-            <h1>Dashboard</h1>
-            <p>Welcome, <strong>{{ username }}</strong>! Here's an overview of your activity.</p>
-        </div>
+{% block content %}
+<div class="container dashboard-container">
+    <h1>Analytics Dashboard</h1>
+    <p class="subtitle">Monitor your smartphone addiction metrics</p>
 
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-number">42</div>
-                <div class="stat-label">Total Projects</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">156</div>
-                <div class="stat-label">Tasks Completed</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">8</div>
-                <div class="stat-label">Active Tasks</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number">92%</div>
-                <div class="stat-label">Success Rate</div>
-            </div>
-        </div>
+    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--green-very-light); border-radius: 8px;">
+        <h2>About MindPhone AI</h2>
+        <p>
+            MindPhone AI is dedicated to helping individuals understand and manage their 
+            smartphone usage through machine learning and data-driven insights. Our mission is to promote digital 
+            wellness and mental health in an increasingly connected world.
+        </p>
+    </section>
 
-        <div class="content-grid" style="margin-top: 30px;">
-            <div class="card">
-                <h3>Recent Activity</h3>
-                <p>You have 3 new notifications. Check your profile page for more details about your recent activities and updates.</p>
+    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--green-very-light); border-radius: 8px;">
+        <h2>How Our ML Model Works</h2>
+        <div class="model-info">
+            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
+                <h3>Data Collection</h3>
+                <p>We analyze various factors including daily usage hours, notification frequency, sleep disruption, 
+                social anxiety, and FOMO levels to create a comprehensive addiction profile.</p>
             </div>
-            <div class="card">
-                <h3>Quick Links</h3>
-                <p>Navigate to your profile to update personal information or visit settings to configure your preferences.</p>
+            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
+                <h3>Machine Learning</h3>
+                <p>Our trained model uses supervised learning algorithms to identify patterns in smartphone addiction 
+                behaviors and predict addiction levels with high accuracy.</p>
             </div>
-            <div class="card">
-                <h3>Performance</h3>
-                <p>Your performance metrics show a 15% improvement this month. Keep up the great work and continue monitoring your progress.</p>
+            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
+                <h3>Prediction</h3>
+                <p>Based on the input features, the model generates an addiction score (0-100) and classifies the risk 
+                level as Low, Medium, or High.</p>
             </div>
         </div>
+    </section>
+
+    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--green-very-light); border-radius: 8px;">
+        <h2>Why Choose MindPhone AI?</h2>
+        <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>Accurate Predictions</h4>
+                <p style="font-size: 14px;">Advanced ML algorithms with high prediction accuracy</p>
+            </div>
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>Privacy First</h4>
+                <p style="font-size: 14px;">Your data is completely private and never stored</p>
+            </div>
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>User Friendly</h4>
+                <p style="font-size: 14px;">Simple and intuitive interface for all users</p>
+            </div>
+            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
+                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
+                <h4>Detailed Analytics</h4>
+                <p style="font-size: 14px;">Comprehensive insights and recommendations</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="recent-predictions">
+        <h3>Recent Predictions</h3>
+        <table class="predictions-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Addiction Score</th>
+                    <th>Risk Level</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>65.4</td>
+                    <td><span class="badge badge-medium">Medium</span></td>
+                    <td>2026-01-10</td>
+                </tr>
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>82.1</td>
+                    <td><span class="badge badge-high">High</span></td>
+                    <td>2026-01-09</td>
+                </tr>
+                <tr>
+                    <td>Mike Johnson</td>
+                    <td>28.3</td>
+                    <td><span class="badge badge-low">Low</span></td>
+                    <td>2026-01-08</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</body>
-</html>
+</div>
+
+{% endblock %}

@@ -1,1 +1,14 @@
-{"admin": "password123", "user": "user123", "testuser": "test123456", "demo": "123123"}
+{
+  "testuser": {
+    "email": "test@example.com",
+    "password": "scrypt:32768:8:1$a15Pzcfog58A8CDX$e869e2908aa18fa63af5736119a0dd0c1253d4f26b5866e5ae29296e4a5d4c05f1e191be64e2cc07db7754407e1b91915eb3eca568fc373fe5c49b7afa03f4bb",
+    "created_at": "2026-01-11T10:00:00",
+    "predictions": []
+  },
+  "demo": {
+    "email": "mindsgcp@gmail.com",
+    "password": "scrypt:32768:8:1$SBY8HWa2KYSaRyzY$d4720cf2a0e6fd9f21d51aa3b3e586a9e7ce64fdf6751e4b34839c4fa69fa5b56f6f804189daf4576d647e617f98b8d6ec14d58e3f9099ef2c64026a154395cf",
+    "created_at": "2026-01-11T21:02:31.180803",
+    "predictions": []
+  }
+}
