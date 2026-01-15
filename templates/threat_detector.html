@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Detector - Intelligent Threat Hunting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h2>⚠️ Threat Hunting Dashboard</h2>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('threat_detector') }}">Threat Detector</a></li>
+                <li><a href="{{ url_for('model_info') }}">Model Info</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>🔍 Network Traffic Anomaly Detector</h1>
+            <p>Analyze network traffic patterns to identify potential threats and anomalies</p>
+        </div>
+
+        <div class="form-section">
+            <h2>Analyze Network Traffic</h2>
+            <form method="POST" action="{{ url_for('threat_detector') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="source_ip">Source IP</label>
+                        <input type="text" id="source_ip" name="source_ip" required placeholder="e.g., 192.168.1.100" value="{{ request.form.get('source_ip', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="destination_ip">Destination IP</label>
+                        <input type="text" id="destination_ip" name="destination_ip" required placeholder="e.g., 10.0.0.50" value="{{ request.form.get('destination_ip', '') }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="protocol">Protocol</label>
+                        <input type="text" id="protocol" name="protocol" required placeholder="e.g., TCP, UDP, ICMP" value="{{ request.form.get('protocol', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="packet_size">Packet Size (bytes)</label>
+                        <input type="number" id="packet_size" name="packet_size" required placeholder="e.g., 1024" min="0" value="{{ request.form.get('packet_size', '') }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duration">Duration (seconds)</label>
+                        <input type="number" id="duration" name="duration" required placeholder="e.g., 2.5" step="0.1" min="0" value="{{ request.form.get('duration', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="bandwidth">Bandwidth (Kbps)</label>
+                        <input type="number" id="bandwidth" name="bandwidth" required placeholder="e.g., 5120" min="0" value="{{ request.form.get('bandwidth', '') }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">🔍 Analyze Traffic</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="result-box {% if result.is_anomaly %}anomaly{% else %}normal{% endif %}">
+            <div class="result-title">
+                {% if result.is_anomaly %}
+                ⚠️ ANOMALY DETECTED
+                {% else %}
+                ✓ NORMAL TRAFFIC
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 15px;">
+                <strong>Network Traffic Summary:</strong>
+                <ul style="margin-top: 10px; margin-left: 20px; line-height: 1.8;">
+                    <li>Source IP: <code>{{ result.source_ip }}</code></li>
+                    <li>Destination IP: <code>{{ result.destination_ip }}</code></li>
+                    <li>Protocol: <code>{{ result.protocol }}</code></li>
+                    <li>Packet Size: <code>{{ result.packet_size }} bytes</code></li>
+                    <li>Duration: <code>{{ result.duration }} seconds</code></li>
+                    <li>Bandwidth: <code>{{ result.bandwidth }} Kbps</code></li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <strong>Detection Confidence:</strong>
+                <div class="confidence-meter">
+                    <div class="confidence-bar {% if result.is_anomaly %}anomaly{% else %}normal{% endif %}" 
+                         style="width: {{ result.confidence * 100 }}%">
+                        {{ "%.1f" | format(result.confidence * 100) }}%
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-indicators">
+                <strong>Risk Factors:</strong>
+                {% if result.is_anomaly %}
+                    {% if result.packet_size > 10000 %}
+                    <div class="indicator">
+                        <div class="indicator-icon warning">!</div>
+                        <span>High packet size detected ({{ result.packet_size }} bytes)</span>
+                    </div>
+                    {% else %}
+                    <div class="indicator">
+                        <div class="indicator-icon good">✓</div>
+                        <span>Packet size within normal range ({{ result.packet_size }} bytes)</span>
+                    </div>
+                    {% endif %}
+
+                    {% if result.duration > 3.0 %}
+                    <div class="indicator">
+                        <div class="indicator-icon warning">!</div>
+                        <span>Unusual connection duration detected ({{ result.duration }} seconds)</span>
+                    </div>
+                    {% else %}
+                    <div class="indicator">
+                        <div class="indicator-icon good">✓</div>
+                        <span>Normal connection duration ({{ result.duration }} seconds)</span>
+                    </div>
+                    {% endif %}
+
+                    {% if result.bandwidth > 10000 %}
+                    <div class="indicator">
+                        <div class="indicator-icon warning">!</div>
+                        <span>High bandwidth usage detected ({{ result.bandwidth }} Kbps)</span>
+                    </div>
+                    {% else %}
+                    <div class="indicator">
+                        <div class="indicator-icon good">✓</div>
+                        <span>Normal bandwidth consumption ({{ result.bandwidth }} Kbps)</span>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="indicator">
+                        <div class="indicator-icon good">✓</div>
+                        <span>All metrics within normal parameters</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; font-size: 12px; color: #a0a0a0;">
+                <strong>Model Version:</strong> K-Neighbors Classifier (k=3)<br>
+                <strong>Training Samples:</strong> 25 network traffic patterns (15 normal, 10 anomalous)<br>
+                <strong>Detection Method:</strong> Distance-based classification
+            </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: #a0a0a0;">
+            <p>Submit network traffic details above to begin anomaly detection analysis.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

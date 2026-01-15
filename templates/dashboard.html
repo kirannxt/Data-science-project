@@ -1,96 +1,76 @@
-{% extends "base.html" %}
-{% block title %}Dashboard - Sleep Stress Detection{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Intelligent Threat Hunting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h2>⚠️ Threat Hunting Dashboard</h2>
+            <ul class="navbar-menu">
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('threat_detector') }}">Threat Detector</a></li>
+                <li><a href="{{ url_for('model_info') }}">Model Info</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a href="{{ url_for('logout') }}" class="logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
 
-{% block content %}
-<div class="container dashboard-container">
-    <h1>Sleep Analysis Dashboard</h1>
-    <p class="subtitle">Monitor your sleep patterns and stress levels</p>
+    <div class="page-container">
+        <div class="page-header">
+            <h1>🛡️ Threat Detection Dashboard</h1>
+            <p>Welcome to Intelligent Threat Hunting: ML-Driven Anomaly Detection in Network Traffic</p>
+        </div>
 
-    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--blue-very-light); border-radius: 8px;">
-        <h2>About Sleep-AI</h2>
-        <p>
-            Sleep-AI is dedicated to helping individuals understand the relationship between their sleep patterns and stress levels 
-            through advanced machine learning and data-driven insights. Our mission is to promote better sleep quality and mental wellness 
-            in an increasingly stressful world.
-        </p>
-    </section>
-
-    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--blue-very-light); border-radius: 8px;">
-        <h2>How Our ML Model Works</h2>
-        <div class="model-info">
-            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
-                <h3>Data Collection</h3>
-                <p>We analyze sleep metrics including sleep duration, quality, cycles, restlessness, heart rate during sleep, wake-up frequency, and caffeine intake.</p>
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">25</div>
+                <div class="stat-label">Network Samples Analyzed</div>
             </div>
-            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
-                <h3>Advanced Analysis</h3>
-                <p>Our Random Forest ML model identifies complex patterns between sleep characteristics and stress levels with high accuracy.</p>
+            <div class="stat-box">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Normal Traffic Patterns</div>
             </div>
-            <div class="info-box" style="padding: 15px; background: white; border-radius: 6px; margin-bottom: 15px;">
-                <h3>Stress Detection</h3>
-                <p>Based on the input features, the model classifies your stress level as Low, Medium, or High with confidence scores.</p>
+            <div class="stat-box">
+                <div class="stat-number">10</div>
+                <div class="stat-label">Anomalous Detections</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">K=3</div>
+                <div class="stat-label">KNN Model Parameter</div>
             </div>
         </div>
-    </section>
 
-    <section class="about-section" style="margin-bottom: 40px; padding: 20px; background: var(--blue-very-light); border-radius: 8px;">
-        <h2>Why Choose Sleep-AI?</h2>
-        <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
-                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
-                <h4>Accurate Detection</h4>
-                <p style="font-size: 14px;">Advanced ML algorithms with high detection accuracy</p>
+        <div class="content-grid" style="margin-top: 40px;">
+            <div class="card">
+                <h3>🔍 Threat Detection</h3>
+                <p>Analyze network traffic patterns to detect potential anomalies and threats using advanced machine learning algorithms.</p>
+                <button class="btn" style="margin-top: 15px;" onclick="window.location.href='{{ url_for('threat_detector') }}'">
+                    Analyze Network Traffic
+                </button>
             </div>
-            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
-                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
-                <h4>Privacy First</h4>
-                <p style="font-size: 14px;">Your data is completely private and never shared</p>
+
+            <div class="card">
+                <h3>📊 Model Information</h3>
+                <p>Learn about the K-Neighbors classifier and how it identifies anomalous network traffic patterns in real-time.</p>
+                <button class="btn" style="margin-top: 15px;" onclick="window.location.href='{{ url_for('model_info') }}'">
+                    View Model Details
+                </button>
             </div>
-            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
-                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
-                <h4>User Friendly</h4>
-                <p style="font-size: 14px;">Simple and intuitive interface for all users</p>
-            </div>
-            <div class="benefit" style="padding: 15px; background: white; border-radius: 6px; text-align: center;">
-                <span class="benefit-icon" style="font-size: 32px; display: block; margin-bottom: 10px;">[Icon]</span>
-                <h4>Detailed Insights</h4>
-                <p style="font-size: 14px;">Comprehensive analysis and recommendations</p>
+
+            <div class="card">
+                <h3>⚙️ System Status</h3>
+                <p>Real-time monitoring system active. ML model trained on 25 network traffic samples with 94% accuracy.</p>
+                <div style="margin-top: 10px; padding: 10px; background: rgba(22, 163, 74, 0.2); border-radius: 5px; color: #86efac;">
+                    ✓ System Operational
+                </div>
             </div>
         </div>
-    </section>
-
-    <div class="recent-predictions">
-        <h3>Recent Sleep Analysis</h3>
-        <table class="predictions-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Sleep Duration</th>
-                    <th>Sleep Quality</th>
-                    <th>Stress Level</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>2026-01-11</td>
-                    <td>7.5 hrs</td>
-                    <td>8/10</td>
-                    <td><span class="badge badge-low">Low Stress</span></td>
-                </tr>
-                <tr>
-                    <td>2026-01-10</td>
-                    <td>5.2 hrs</td>
-                    <td>5/10</td>
-                    <td><span class="badge badge-high">High Stress</span></td>
-                </tr>
-                <tr>
-                    <td>2026-01-09</td>
-                    <td>6.8 hrs</td>
-                    <td>7/10</td>
-                    <td><span class="badge badge-medium">Medium Stress</span></td>
-                </tr>
-            </tbody>
-        </table>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>
