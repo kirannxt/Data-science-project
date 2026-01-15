@@ -1,113 +1,101 @@
-// Main JavaScript for Smartphone Addiction Prediction App
+// Main JavaScript for Sleep Stress Detection App
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile menu toggle
+    console.log('Sleep Stress Detection App Loaded');
+    initializeApp();
+});
+
+function initializeApp() {
+    // Initialize mobile menu toggle
+    initMobileMenu();
+    
+    // Initialize form validation
+    initFormValidation();
+}
+
+function initMobileMenu() {
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
-
+    
     if (navToggle) {
         navToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
         });
     }
+}
 
-    // Close menu when link is clicked
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-        });
-    });
-
-    // Smooth scroll for hash links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-
-    // Add animation to elements on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    // Observe all cards and sections
-    document.querySelectorAll('.feature-card, .insight-card, .stat-card, .benefit').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
-
-    // Form validation
+function initFormValidation() {
     const forms = document.querySelectorAll('form');
+    
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            // Basic validation can be added here
+            // Add custom validation if needed
             console.log('Form submitted');
         });
     });
-});
+}
 
-// Utility function to fetch data
-async function fetchData(url, options = {}) {
+// Sleep form specific validation
+function validateSleepForm() {
+    const sleepDuration = parseFloat(document.getElementById('sleep_duration')?.value || 0);
+    const sleepQuality = parseInt(document.getElementById('sleep_quality')?.value || 0);
+    const sleepCycles = parseInt(document.getElementById('sleep_cycles')?.value || 0);
+    
+    if (sleepDuration < 0 || sleepDuration > 12) {
+        alert('Sleep duration must be between 0 and 12 hours');
+        return false;
+    }
+    
+    if (sleepQuality < 1 || sleepQuality > 10) {
+        alert('Sleep quality must be between 1 and 10');
+        return false;
+    }
+    
+    if (sleepCycles < 3 || sleepCycles > 6) {
+        alert('Sleep cycles must be between 3 and 6');
+        return false;
+    }
+    
+    return true;
+}
+
+// API call for prediction
+async function makePrediction(data) {
     try {
-        const response = await fetch(url, {
+        const response = await fetch('/api/predict', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...options.headers
             },
-            ...options
+            body: JSON.stringify(data)
         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error('Prediction failed');
         }
-        
-        return await response.json();
     } catch (error) {
-        console.error('Fetch error:', error);
-        throw error;
+        console.error('Error:', error);
+        return { error: error.message };
     }
 }
 
-// Format numbers for display
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-US', {
-        maximumFractionDigits: 2
-    }).format(num);
-}
-
-// Show notification
+// Utility functions
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'error' ? '#ff6b6b' : '#51cf66'};
-        color: white;
         padding: 15px 20px;
+        background: ${type === 'error' ? '#f44336' : '#4caf50'};
+        color: white;
         border-radius: 8px;
         z-index: 1000;
-        animation: slideIn 0.3s ease;
+        animation: slideIn 0.3s ease-in;
     `;
     
     document.body.appendChild(notification);
@@ -115,4 +103,31 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.remove();
     }, 3000);
+}
+
+function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+function getStressColor(stressLevel) {
+    const colors = {
+        'Low Stress': '#4caf50',
+        'Medium Stress': '#ff9800',
+        'High Stress': '#f44336'
+    };
+    return colors[stressLevel] || '#999';
+}
+
+// Export functions if needed
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        makePrediction,
+        showNotification,
+        formatDate,
+        getStressColor
+    };
 }

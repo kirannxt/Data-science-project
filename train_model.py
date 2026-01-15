@@ -1,92 +1,97 @@
-"""
-Machine Learning Model Training Script
-Uses ExtraTreesClassifier to predict smartphone addiction levels
-"""
-
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import joblib
-import os
+import warnings
 
-# Set random seed for reproducibility
-np.random.seed(42)
+warnings.filterwarnings('ignore')
 
 def generate_training_data(n_samples=500):
     """
-    Generate synthetic training data for smartphone addiction prediction
-    
-    Features:
-    - daily_usage: Hours spent on phone daily (0-24)
-    - screen_time: Screen on time score (0-10)
-    - notification_checks: Frequency of checking notifications (0-10)
-    - sleep_disruption: Impact on sleep quality (0-10)
-    - social_anxiety: Anxiety when phone is away (0-10)
-    - fomo_score: Fear of missing out score (0-10)
-    
-    Target:
-    - addiction_level: 0 (Low), 1 (Medium), 2 (High)
+    Generate synthetic training data for sleep-based stress detection
+    Features: sleep_duration, sleep_quality, sleep_cycles, restlessness, 
+              heart_rate, wake_ups, caffeine_intake
     """
+    np.random.seed(42)
     
-    # Generate features
-    daily_usage = np.random.uniform(1, 24, n_samples)
-    screen_time = np.random.uniform(0, 10, n_samples)
-    notification_checks = np.random.uniform(0, 10, n_samples)
-    sleep_disruption = np.random.uniform(0, 10, n_samples)
-    social_anxiety = np.random.uniform(0, 10, n_samples)
-    fomo_score = np.random.uniform(0, 10, n_samples)
+    sleep_duration = np.random.normal(7, 1.5, n_samples)  # hours
+    sleep_quality = np.random.randint(1, 10, n_samples)  # 1-10 scale
+    sleep_cycles = np.random.randint(3, 7, n_samples)  # typically 4-6 cycles
+    restlessness = np.random.normal(5, 2, n_samples)  # 0-10 scale
+    heart_rate = np.random.normal(65, 10, n_samples)  # BPM
+    wake_ups = np.random.randint(0, 6, n_samples)  # number of times
+    caffeine_intake = np.random.randint(0, 500, n_samples)  # mg
     
-    # Create feature matrix
+    # Generate stress labels based on features
+    stress_level = np.zeros(n_samples, dtype=int)
+    
+    for i in range(n_samples):
+        stress_score = 0
+        
+        # Low sleep duration increases stress
+        if sleep_duration[i] < 6:
+            stress_score += 2
+        elif sleep_duration[i] > 9:
+            stress_score += 1
+            
+        # Low sleep quality increases stress
+        if sleep_quality[i] < 5:
+            stress_score += 2
+        elif sleep_quality[i] < 7:
+            stress_score += 1
+            
+        # High restlessness increases stress
+        if restlessness[i] > 6:
+            stress_score += 2
+            
+        # High heart rate indicates stress
+        if heart_rate[i] > 80:
+            stress_score += 2
+        elif heart_rate[i] > 75:
+            stress_score += 1
+            
+        # Multiple wake-ups increase stress
+        if wake_ups[i] > 3:
+            stress_score += 2
+        elif wake_ups[i] > 1:
+            stress_score += 1
+            
+        # High caffeine intake increases stress
+        if caffeine_intake[i] > 300:
+            stress_score += 1
+            
+        # Classify stress level
+        if stress_score <= 2:
+            stress_level[i] = 0  # Low stress
+        elif stress_score <= 5:
+            stress_level[i] = 1  # Medium stress
+        else:
+            stress_level[i] = 2  # High stress
+    
     X = np.column_stack([
-        daily_usage,
-        screen_time,
-        notification_checks,
-        sleep_disruption,
-        social_anxiety,
-        fomo_score
+        sleep_duration, sleep_quality, sleep_cycles, restlessness,
+        heart_rate, wake_ups, caffeine_intake
     ])
     
-    # Generate target based on weighted combination of features
-    weighted_score = (
-        daily_usage * 0.25 +
-        screen_time * 0.15 +
-        notification_checks * 0.15 +
-        sleep_disruption * 0.15 +
-        social_anxiety * 0.15 +
-        fomo_score * 0.15
-    )
-    
-    # Normalize to 0-10 scale
-    normalized_score = (weighted_score / 24) * 10
-    
-    # Create labels: Low (0-3), Medium (3-7), High (7-10)
-    y = np.where(normalized_score < 3.3, 0,
-                 np.where(normalized_score < 6.7, 1, 2))
-    
-    return X, y
+    return X, stress_level
+
 
 def train_model():
-    """Train ExtraTreesClassifier model"""
-    
+    """Train the stress detection model"""
     print("=" * 60)
-    print("SMARTPHONE ADDICTION PREDICTION - ML MODEL TRAINING")
+    print("SLEEP-BASED STRESS DETECTION - ML MODEL TRAINING")
     print("=" * 60)
     
-    # Generate training data
-    print("\n1. Generating training data...")
+    # Generate data
+    print("\n1. Generating synthetic training data...")
     X, y = generate_training_data(n_samples=500)
     print(f"   - Generated {X.shape[0]} samples with {X.shape[1]} features")
-    print(f"   - Class distribution:")
-    unique, counts = np.unique(y, return_counts=True)
-    for label, count in zip(unique, counts):
-        risk_level = ["Low", "Medium", "High"][label]
-        print(f"     * {risk_level}: {count} samples")
     
-    # Split data into training and testing sets
-    print("\n2. Splitting data (80% train, 20% test)...")
+    # Split data
+    print("\n2. Splitting data into train/test sets...")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
@@ -94,87 +99,65 @@ def train_model():
     print(f"   - Testing set: {X_test.shape[0]} samples")
     
     # Normalize features
-    print("\n3. Normalizing features...")
+    print("\n3. Normalizing features with StandardScaler...")
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
-    print("   - Features normalized using StandardScaler")
+    print("   - Features normalized successfully")
     
-    # Train ExtraTreesClassifier
-    print("\n4. Training ExtraTreesClassifier model...")
-    model = ExtraTreesClassifier(
+    # Train model
+    print("\n4. Training Random Forest Classifier...")
+    model = RandomForestClassifier(
         n_estimators=100,
-        max_depth=10,
-        min_samples_split=5,
-        min_samples_leaf=2,
+        max_depth=15,
         random_state=42,
         n_jobs=-1,
         bootstrap=True
     )
-    
     model.fit(X_train_scaled, y_train)
-    print("   - Model trained successfully!")
+    print("   - Model training completed")
     
-    # Evaluate model
-    print("\n5. Model Evaluation:")
+    # Evaluate
+    print("\n5. Evaluating model performance...")
+    y_pred_train = model.predict(X_train_scaled)
+    y_pred_test = model.predict(X_test_scaled)
     
-    # Training accuracy
-    train_pred = model.predict(X_train_scaled)
-    train_accuracy = accuracy_score(y_train, train_pred)
-    print(f"   - Training Accuracy: {train_accuracy:.4f}")
+    train_accuracy = accuracy_score(y_train, y_pred_train)
+    test_accuracy = accuracy_score(y_test, y_pred_test)
     
-    # Testing accuracy
-    test_pred = model.predict(X_test_scaled)
-    test_accuracy = accuracy_score(y_test, test_pred)
-    print(f"   - Testing Accuracy: {test_accuracy:.4f}")
+    print(f"   - Training Accuracy: {train_accuracy*100:.2f}%")
+    print(f"   - Testing Accuracy: {test_accuracy*100:.2f}%")
     
-    # Classification report
-    print("\n   Classification Report (Test Set):")
-    report = classification_report(
-        y_test, test_pred,
-        target_names=['Low Risk', 'Medium Risk', 'High Risk'],
-        labels=np.unique(y_test),
-        zero_division=0
-    )
-    print(report)
+    print("\n6. Detailed Classification Report:")
+    print(classification_report(
+        y_test, y_pred_test,
+        target_names=['Low Stress', 'Medium Stress', 'High Stress'],
+        labels=np.unique(y_test)
+    ))
     
-    # Confusion matrix
-    print("   Confusion Matrix:")
-    cm = confusion_matrix(y_test, test_pred)
-    print(cm)
+    print("\n7. Confusion Matrix:")
+    print(confusion_matrix(y_test, y_pred_test))
     
     # Feature importance
-    print("\n6. Feature Importance:")
+    print("\n8. Feature Importance:")
     feature_names = [
-        'Daily Usage',
-        'Screen Time',
-        'Notification Checks',
-        'Sleep Disruption',
-        'Social Anxiety',
-        'FOMO Score'
+        'Sleep Duration', 'Sleep Quality', 'Sleep Cycles', 'Restlessness',
+        'Heart Rate', 'Wake Ups', 'Caffeine Intake'
     ]
-    importances = model.feature_importances_
-    for name, importance in zip(feature_names, importances):
-        print(f"   - {name}: {importance:.4f}")
+    for name, importance in zip(feature_names, model.feature_importances_):
+        print(f"   - {name}: {importance*100:.2f}%")
     
-    # Save model and scaler
-    print("\n7. Saving model and scaler...")
-    model_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    model_path = os.path.join(model_dir, 'addiction_model.pkl')
-    scaler_path = os.path.join(model_dir, 'scaler.pkl')
-    
-    joblib.dump(model, model_path)
-    joblib.dump(scaler, scaler_path)
-    
-    print(f"   - Model saved to: {model_path}")
-    print(f"   - Scaler saved to: {scaler_path}")
+    # Save model
+    print("\n9. Saving model files...")
+    joblib.dump(model, 'stress_model.pkl')
+    joblib.dump(scaler, 'scaler.pkl')
+    print("   - stress_model.pkl saved")
+    print("   - scaler.pkl saved")
     
     print("\n" + "=" * 60)
-    print("MODEL TRAINING COMPLETED SUCCESSFULLY!")
+    print("Model training completed successfully!")
     print("=" * 60)
-    
-    return model, scaler
+
 
 if __name__ == '__main__':
     train_model()

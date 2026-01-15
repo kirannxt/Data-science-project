@@ -1,35 +1,70 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-import numpy as np
-from datetime import datetime
-import os
-import json
-import joblib
-import warnings
 from functools import wraps
-
-warnings.filterwarnings('ignore')
+import json
+import os
+import joblib
+import numpy as np
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here-change-in-production'
+app.secret_key = 'stress-detection-secret-key-2026'
 
-# User database file
-USERS_FILE = os.path.join(os.path.dirname(__file__), 'users.json')
-
+# Load users from JSON file
 def load_users():
     """Load users from JSON file"""
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
+    if os.path.exists('users.json'):
+        with open('users.json', 'r') as f:
             return json.load(f)
     return {}
 
+# Save users to JSON file
 def save_users(users):
     """Save users to JSON file"""
-    with open(USERS_FILE, 'w') as f:
+    with open('users.json', 'w') as f:
         json.dump(users, f, indent=2)
 
+# Load ML model
+def load_model():
+    """Load the trained ML model and scaler"""
+    try:
+        model = joblib.load('stress_model.pkl')
+        scaler = joblib.load('scaler.pkl')
+        return model, scaler
+    except:
+        return None, None
+
+# Stress predictor class
+class StressPredictor:
+    def __init__(self, model, scaler):
+        self.model = model
+        self.scaler = scaler
+        self.stress_labels = ['Low Stress', 'Medium Stress', 'High Stress']
+        self.stress_colors = ['#4caf50', '#ff9800', '#f44336']
+    
+    def predict(self, features):
+        """Make prediction on stress level"""
+        try:
+            # Normalize features
+            features_scaled = self.scaler.transform([features])
+            
+            # Predict
+            prediction = self.model.predict(features_scaled)[0]
+            probabilities = self.model.predict_proba(features_scaled)[0]
+            
+            # Calculate stress score (0-100)
+            stress_score = int(probabilities[prediction] * 100)
+            
+            return {
+                'stress_level': self.stress_labels[prediction],
+                'stress_score': stress_score,
+                'confidence': round(probabilities[prediction] * 100, 2),
+                'color': self.stress_colors[prediction]
+            }
+        except Exception as e:
+            return {'error': str(e)}
+
+# Login required decorator
 def login_required(f):
-    """Decorator to protect routes that require login"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user' not in session:
@@ -37,240 +72,153 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Load trained ML model and scaler
-def load_model():
-    """Load the trained ExtraTreesClassifier model and scaler"""
-    model_path = os.path.join(os.path.dirname(__file__), 'addiction_model.pkl')
-    scaler_path = os.path.join(os.path.dirname(__file__), 'scaler.pkl')
-    
-    try:
-        model = joblib.load(model_path)
-        scaler = joblib.load(scaler_path)
-        return model, scaler
-    except FileNotFoundError:
-        print("Warning: Model files not found. Please run 'python train_model.py' to train the model.")
-        return None, None
-
-# Load model and scaler
-ml_model, scaler = load_model()
-
-class AddictionPredictor:
-    """Real ML-based prediction using ExtraTreesClassifier"""
-    
-    def __init__(self, model, scaler):
-        self.model = model
-        self.scaler = scaler
-        self.risk_levels = {0: "Low", 1: "Medium", 2: "High"}
-    
-    def predict(self, features):
-        """
-        Predicts smartphone addiction level using trained ML model
-        
-        Args:
-            features: List of 6 features [daily_usage, screen_time, notification_checks, 
-                     sleep_disruption, social_anxiety, fomo_score]
-        
-        Returns:
-            addiction_score (0-100), risk_level (Low/Medium/High), confidence (%)
-        """
-        if self.model is None or self.scaler is None:
-            # Fallback to mock if model not loaded
-            return self._fallback_predict(features)
-        
-        try:
-            # Prepare feature array
-            X = np.array(features).reshape(1, -1)
-            
-            # Scale features
-            X_scaled = self.scaler.transform(X)
-            
-            # Get prediction
-            prediction = self.model.predict(X_scaled)[0]
-            
-            # Get prediction probabilities for confidence
-            probabilities = self.model.predict_proba(X_scaled)[0]
-            confidence = max(probabilities) * 100
-            
-            # Map prediction to addiction score
-            # Calculate average feature value weighted by importance
-            feature_importance = self.model.feature_importances_
-            weighted_score = np.sum(np.array(features) * feature_importance) / np.sum(feature_importance)
-            
-            # Normalize to 0-100 scale
-            addiction_score = (weighted_score / 10) * 100
-            addiction_score = min(100, max(0, addiction_score))
-            
-            risk_level = self.risk_levels.get(prediction, "Medium")
-            
-            return addiction_score, risk_level, confidence
-        
-        except Exception as e:
-            print(f"Prediction error: {e}")
-            return self._fallback_predict(features)
-    
-    def _fallback_predict(self, features):
-        """Fallback prediction if model loading fails"""
-        score = np.mean(features) * 10
-        score = min(100, max(0, score))
-        
-        if score < 30:
-            risk = "Low"
-        elif score < 70:
-            risk = "Medium"
-        else:
-            risk = "High"
-        
-        return score, risk, 0
-
-# Initialize predictor
-predictor = AddictionPredictor(ml_model, scaler)
-
-# ========================
-# AUTHENTICATION ROUTES
-# ========================
+# Routes
+@app.route('/')
+def index():
+    """Landing page"""
+    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    """Handle user registration"""
+    """User registration"""
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '')
-        confirm_password = request.form.get('confirm_password', '')
-        
-        # Validation
-        if not username or not email or not password:
-            return render_template('register.html', error='All fields are required'), 400
-        
-        if len(username) < 3:
-            return render_template('register.html', error='Username must be at least 3 characters'), 400
-        
-        if len(password) < 6:
-            return render_template('register.html', error='Password must be at least 6 characters'), 400
-        
-        if password != confirm_password:
-            return render_template('register.html', error='Passwords do not match'), 400
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
         
         users = load_users()
         
-        if username in users:
-            return render_template('register.html', error='Username already exists'), 400
+        # Validation
+        if not username or len(username) < 3:
+            return render_template('register.html', error='Username must be at least 3 characters')
         
-        # Create new user
+        if username in users:
+            return render_template('register.html', error='Username already exists')
+        
+        if password != confirm_password:
+            return render_template('register.html', error='Passwords do not match')
+        
+        if len(password) < 6:
+            return render_template('register.html', error='Password must be at least 6 characters')
+        
+        # Create user
         users[username] = {
             'email': email,
             'password': generate_password_hash(password),
-            'created_at': datetime.now().isoformat(),
+            'created_at': str(__import__('datetime').datetime.now()),
             'predictions': []
         }
         
         save_users(users)
-        
-        return redirect(url_for('login', success='Registration successful! Please login.'))
+        return render_template('register.html', success='Registration successful! Please login.')
     
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Handle user login"""
+    """User login"""
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '')
-        
-        if not username or not password:
-            return render_template('login.html', error='Username and password are required'), 400
+        username = request.form.get('username')
+        password = request.form.get('password')
         
         users = load_users()
         
-        if username not in users:
-            return render_template('login.html', error='Invalid username or password'), 401
-        
-        user = users[username]
-        
-        if not check_password_hash(user['password'], password):
-            return render_template('login.html', error='Invalid username or password'), 401
-        
-        # Set session
-        session['user'] = username
-        session['email'] = user['email']
-        
-        return redirect(url_for('dashboard'))
+        if username in users and check_password_hash(users[username]['password'], password):
+            session['user'] = username
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('login.html', error='Invalid username or password')
     
-    success = request.args.get('success', '')
-    return render_template('login.html', success=success)
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    """Handle user logout"""
+    """User logout"""
     session.pop('user', None)
-    session.pop('email', None)
-    return redirect(url_for('login', success='Logged out successfully!'))
-
-@app.route('/')
-def home():
-    """Home page - redirect to login if not authenticated"""
-    if 'user' in session:
-        return redirect(url_for('dashboard'))
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    """Dashboard - protected route"""
+    """Dashboard page"""
     return render_template('dashboard.html', username=session.get('user'))
 
-@app.route('/prediction')
+@app.route('/prediction', methods=['GET', 'POST'])
 @login_required
 def prediction():
-    """Prediction page - protected route"""
-    return render_template('prediction.html', username=session.get('user'))
+    """Prediction page"""
+    model, scaler = load_model()
+    result = None
+    
+    if request.method == 'POST':
+        try:
+            # Get form data
+            sleep_duration = float(request.form.get('sleep_duration', 7))
+            sleep_quality = int(request.form.get('sleep_quality', 7))
+            sleep_cycles = int(request.form.get('sleep_cycles', 4))
+            restlessness = float(request.form.get('restlessness', 5))
+            heart_rate = float(request.form.get('heart_rate', 65))
+            wake_ups = int(request.form.get('wake_ups', 1))
+            caffeine_intake = int(request.form.get('caffeine_intake', 100))
+            
+            # Create predictor
+            predictor = StressPredictor(model, scaler)
+            
+            # Make prediction
+            features = [sleep_duration, sleep_quality, sleep_cycles, 
+                       restlessness, heart_rate, wake_ups, caffeine_intake]
+            result = predictor.predict(features)
+            
+            # Save prediction
+            users = load_users()
+            if session.get('user') in users:
+                users[session['user']]['predictions'].append({
+                    'result': result,
+                    'timestamp': str(__import__('datetime').datetime.now())
+                })
+                save_users(users)
+        
+        except Exception as e:
+            result = {'error': str(e)}
+    
+    return render_template('prediction.html', result=result, username=session.get('user'))
 
 @app.route('/insights')
 @login_required
 def insights():
-    """Insights page - protected route"""
+    """Insights page"""
     return render_template('insights.html', username=session.get('user'))
 
 @app.route('/api/predict', methods=['POST'])
 @login_required
 def api_predict():
-    """API endpoint for addiction prediction - protected"""
+    """API endpoint for predictions"""
+    model, scaler = load_model()
+    data = request.json
+    
     try:
-        data = request.json
         features = [
-            float(data.get('daily_usage', 0)),
-            float(data.get('screen_time', 0)),
-            float(data.get('notification_checks', 0)),
-            float(data.get('sleep_disruption', 0)),
-            float(data.get('social_anxiety', 0)),
-            float(data.get('fomo_score', 0)),
+            float(data['sleep_duration']),
+            int(data['sleep_quality']),
+            int(data['sleep_cycles']),
+            float(data['restlessness']),
+            float(data['heart_rate']),
+            int(data['wake_ups']),
+            int(data['caffeine_intake'])
         ]
         
-        score, risk, confidence = predictor.predict(features)
+        predictor = StressPredictor(model, scaler)
+        result = predictor.predict(features)
         
-        return jsonify({
-            'success': True,
-            'addiction_score': round(score, 2),
-            'risk_level': risk,
-            'confidence': round(confidence, 2),
-            'timestamp': datetime.now().isoformat(),
-            'model': 'ExtraTreesClassifier'
-        })
+        return jsonify(result)
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 400
+        return jsonify({'error': str(e)}), 400
 
-@app.route('/api/stats')
-def api_stats():
-    """API endpoint for dashboard statistics"""
-    return jsonify({
-        'avg_daily_usage': 5.3,
-        'users_high_risk': 42,
-        'total_predictions': 156,
-        'improvement_rate': 23.5
-    })
+@app.errorhandler(404)
+def not_found(error):
+    """404 error handler"""
+    return render_template('index.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
